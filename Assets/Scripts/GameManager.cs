@@ -13,12 +13,14 @@ public class GameManager : MonoBehaviour
     public GameObject endTxt;
     public GameObject endBtn;
     public bool finished = false;
+
     AudioSource audioSource;
     public AudioClip clip;
     public AudioClip clipa;
     
     public int cardCount = 0;
     float time = 0.0f;
+    public bool isWarning = false;
     
 
     void Awake()
@@ -43,18 +45,24 @@ public class GameManager : MonoBehaviour
 
         time += Time.deltaTime;
         timeTxt.text = time.ToString("N2");
-        if (time > 30.0f)
-        {
-            endTxt.SetActive(true);
-            time = 30.0f;
-            
-            finished = true;
-        }
+        if (time >= 20.0f && !isWarning)
+    {
+        AudioManager.Instance.SetVolume(0); // 🔇 BGM 음소거
+        audioSource.PlayOneShot(clipa);
+        isWarning = true;
+    }
 
-        if (time >20.0f)
-        {
-            audioSource.PlayOneShot(clipa);
-        }
+    // 30초 종료 로직 ▼
+    if (time >= 30.0f)
+    {
+        AudioManager.Instance.ResetVolume();
+        AudioManager.Instance.GetComponent<AudioSource>().Stop(); // ✅ 완전히 중지
+        AudioManager.Instance.GetComponent<AudioSource>().Play(); // ✅ 새로 재생
+        endTxt.SetActive(true);
+        time = 30.0f;
+        finished = true;
+    }
+        
     }
 
     public void Matched()

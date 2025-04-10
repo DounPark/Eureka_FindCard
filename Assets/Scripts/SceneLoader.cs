@@ -10,10 +10,11 @@ public class SceneLoader : MonoBehaviour
     
     public void LoadTargetScene()
     {
-        // 비동기 로딩 권장
+        if(AudioManager.Instance != null)
+        {
+            Destroy(AudioManager.Instance.gameObject); // ✅ 기존 매니저 파괴
+        }
         SceneManager.LoadSceneAsync(targetScene);
-        
-        // 로딩 확인용 디버그
-        Debug.Log($"{targetScene} 씬 로딩 시작");
+        AudioManager.Instance?.GetComponent<AudioSource>().Play(); // ✅ 새 인스턴스 재생
     }
 }
